@@ -109,9 +109,9 @@
     vite-plugin-auto-zip "^1.0.4"
 
 "@pixel-builder/core@*":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@pixel-builder/core/-/core-0.0.6.tgz#7a65d781840289b7ae8a1f5c4065ae787a51eb29"
-  integrity sha512-3UQGobmb3Hl3MJXQ8QdJmSXV0rTKQS2/Yd/W1OkmyrBBcid2ICA6svsdcNPuB/iQ3N+3DznG8EPspUSwnBiXQw==
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/@pixel-builder/core/-/core-0.0.9.tgz#65eb288f5aa749b9c8a4ab23fd97354020f828aa"
+  integrity sha512-HCU4skm5+frewFEEw9C9Nk+cxi1y0X0Tfkplyctn7cWeRefQKxdreM4vIVdUbUS6FhZeX2L11Ayn+hnjvCD9IQ==
   dependencies:
     pinia "^2.0.14"
     vue "^3.2.33"

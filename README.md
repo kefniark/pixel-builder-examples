@@ -8,7 +8,7 @@
 
 ## Description
 
-This repository is there to host few examples projected generated with Pixel Builder
+This repository is there to host sample projects, generated with Pixel Builder
 
 * [PixiJS](./projects/pixi/README.md)
 * [BabylonJS](./projects/babylon/README.md)
