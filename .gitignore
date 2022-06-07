@@ -1,0 +1,10 @@
+.turbo
+.temp
+.cache
+.pixel
+node_modules
+
+coverage
+build
+dist
+apps

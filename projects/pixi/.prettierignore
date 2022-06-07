@@ -1,0 +1,9 @@
+.pixel
+.vscode
+.github
+
+coverage
+tmp
+dist
+build
+node_modules
