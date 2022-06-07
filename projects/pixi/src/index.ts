@@ -3,7 +3,9 @@ import App from "./app.vue"
 import IntroScene from "@src/scenes/intro.vue"
 import MenuScene from "@src/scenes/menu.vue"
 
+console.log('init')
 window.addEventListener('load', () => {
+  console.log('loaded')
   // create Application
   mountApp("#app", App, {
     routes: [
