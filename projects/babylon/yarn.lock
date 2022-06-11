@@ -202,9 +202,9 @@
     websocket "^1.0.34"
 
 "@pixel-builder/cli@*":
-  version "0.0.13"
-  resolved "https://registry.yarnpkg.com/@pixel-builder/cli/-/cli-0.0.13.tgz#56927c1b84e0468cd54dc87047c2417148193e88"
-  integrity sha512-+PcQ8IO4en0OELPsPHEUR+GimRHGRKzLiG+V1aiNaPnY7Jsp66bmOcqXrEd9rsdN5u8rlyKymbl5IfaFetZ8pQ==
+  version "0.0.14"
+  resolved "https://registry.yarnpkg.com/@pixel-builder/cli/-/cli-0.0.14.tgz#ec631854f002f3bf6890323fe216e52fad407f03"
+  integrity sha512-TXVZ6GGMlwSzn76j7/y3mAiPMCW3Sbx+sY6iRhGWRUxhZ9XE8iF3hOJuKljL5SLzE90gH/69+EafWYHjf8/5mg==
   dependencies:
     "@neutralinojs/neu" "^9.3.0"
     "@rollup/pluginutils" "^4.2.1"
@@ -227,9 +227,9 @@
     vite-plugin-auto-zip "^1.0.4"
 
 "@pixel-builder/ecs@*":
-  version "0.0.13"
-  resolved "https://registry.yarnpkg.com/@pixel-builder/ecs/-/ecs-0.0.13.tgz#55d15d1081de86592af44fb9d489e1a3263c6368"
-  integrity sha512-T5UIITOvwrvfKbbByeYZ0ZFpAdOJhTbH5Sd8Cpb5kPN1NiWL5c+o/zvvS1JU2Fx64crzHqDHZTcG/AjIsTkBiA==
+  version "0.0.14"
+  resolved "https://registry.yarnpkg.com/@pixel-builder/ecs/-/ecs-0.0.14.tgz#08ac644686827b81ce36ae175ca142a70545a32c"
+  integrity sha512-mFyJKFe5bGmjlzBqvwxwqG82PMINMvQj4IPTa8PcsWee3b8kEPOe/djat8JEgPjQ3vcOoceZUUnuU+krzfgPXw==
   dependencies:
     vue "^3.2.33"
     vue-i18n "^9.1.10"
@@ -3473,21 +3473,21 @@ unzipper@^0.10.11:
 url-parse-lax@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/url-parse-lax/-/url-parse-lax-1.0.0.tgz#7af8f303645e9bd79a272e7a14ac68bc0609da73"
-  integrity sha1-evjzA2Rem9eaJy56FKxovAYJ2nM=
+  integrity sha512-BVA4lR5PIviy2PMseNd2jbFQ+jwSwQGdJejf5ctd1rEXt0Ypd7yanUK9+lYechVlN5VaTJGsu2U/3MDDu6KgBA==
   dependencies:
     prepend-http "^1.0.1"
 
 url-parse-lax@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/url-parse-lax/-/url-parse-lax-3.0.0.tgz#16b5cafc07dbe3676c1b1999177823d6503acb0c"
-  integrity sha1-FrXK/Afb42dsGxmZF3gj1lA6yww=
+  integrity sha512-NjFKA0DidqPa5ciFcSrXnAltTtzz84ogy+NebPvfEgAck0+TNg4UJ4IN+fB7zRZfbgUf0syOo9MDxFkDSMuFaQ==
   dependencies:
     prepend-http "^2.0.0"
 
 url-to-options@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/url-to-options/-/url-to-options-1.0.1.tgz#1505a03a289a48cbd7a434efbaeec5055f5633a9"
-  integrity sha1-FQWgOiiaSMvXpDTvuu7FBV9WM6k=
+  integrity sha512-0kQLIzG4fdk/G5NONku64rSH/x32NOA39LVQqlK8Le6lvTF6GGRJpqaQFGgU+CLwySIqBSMdwYM0sYcW9f6P4A==
 
 utf-8-validate@^5.0.2:
   version "5.0.9"
@@ -3499,7 +3499,7 @@ utf-8-validate@^5.0.2:
 util-deprecate@^1.0.1, util-deprecate@~1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
-  integrity sha1-RQ1Nyfpw3nMnYvvS1KKJgUGaDM8=
+  integrity sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==
 
 uuid@^3.0.1:
   version "3.4.0"
