@@ -1,5 +1,5 @@
 {
-  "name": "--projects-babylon",
+  "name": "projects-babylon",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -20,13 +20,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@pixel-builder/engine": "*",
     "@pixel-builder/ecs": "*",
     "@babylonjs/core": "^5.9.0",
-    "@babylonjs/inspector": "^5.9.0"
+    "@babylonjs/inspector": "^5.9.0",
+    "vue": "^3.2.33",
+    "vue-i18n": "^9.1.10",
+    "vue-router": "^4.0.15"
   },
   "devDependencies": {
     "prettier": "^2.6.2",
+    "c8": "^7.11.3",
+    "vitest": "^0.13.0",
     "@pixel-builder/cli": "*"
   },
   "prettier": {

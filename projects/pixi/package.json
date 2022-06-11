@@ -1,5 +1,5 @@
 {
-  "name": "--projects-pixi",
+  "name": "projects-pixi",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -20,12 +20,16 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@pixel-builder/engine": "*",
     "@pixel-builder/ecs": "*",
-    "pixi.js": "^6.4.2"
+    "pixi.js": "^6.4.2",
+    "vue": "^3.2.33",
+    "vue-i18n": "^9.1.10",
+    "vue-router": "^4.0.15"
   },
   "devDependencies": {
     "prettier": "^2.6.2",
+    "c8": "^7.11.3",
+    "vitest": "^0.13.0",
     "@pixel-builder/cli": "*"
   },
   "prettier": {
