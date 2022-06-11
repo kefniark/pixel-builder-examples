@@ -1,4 +1,4 @@
-import { d as defineComponent, r as ref, o as onMounted, c as createElementBlock, a as openBlock } from "./index.4c58b498.js";
+import { d as defineComponent, r as ref, o as onMounted, c as createElementBlock, a as openBlock } from "./index.32697be7.js";
 const Components = {
   position: { x: 0, y: 0, rotation: 0 },
   velocity: { speed: 0 },
@@ -1079,7 +1079,7 @@ function cureLocalIntersections(start, triangles, dim) {
   var p = start;
   do {
     var a = p.prev, b = p.next.next;
-    if (!equals(a, b) && intersects$1(a, p, p.next, b) && locallyInside(a, b) && locallyInside(b, a)) {
+    if (!equals(a, b) && intersects(a, p, p.next, b) && locallyInside(a, b) && locallyInside(b, a)) {
       triangles.push(a.i / dim);
       triangles.push(p.i / dim);
       triangles.push(b.i / dim);
@@ -1267,7 +1267,7 @@ function area(p, q, r) {
 function equals(p1, p2) {
   return p1.x === p2.x && p1.y === p2.y;
 }
-function intersects$1(p1, q1, p2, q2) {
+function intersects(p1, q1, p2, q2) {
   var o1 = sign$1(area(p1, q1, p2));
   var o2 = sign$1(area(p1, q1, q2));
   var o3 = sign$1(area(p2, q2, p1));
@@ -1293,7 +1293,7 @@ function sign$1(num) {
 function intersectsPolygon(a, b) {
   var p = a;
   do {
-    if (p.i !== a.i && p.next.i !== a.i && p.i !== b.i && p.next.i !== b.i && intersects$1(p, p.next, a, b))
+    if (p.i !== a.i && p.next.i !== a.i && p.i !== b.i && p.next.i !== b.i && intersects(p, p.next, a, b))
       return true;
     p = p.next;
   } while (p !== a);
@@ -26686,7 +26686,7 @@ const InputSystem = (world) => {
     if (evt.key === "ArrowDown")
       driver_break = 0;
   };
-  const queryEntities = world.createQuery(["input"]);
+  const query = world.createQuery(["input"]);
   return {
     mounted() {
       document.addEventListener("keydown", pushKey);
@@ -26697,7 +26697,8 @@ const InputSystem = (world) => {
       document.removeEventListener("keyup", releaseKey);
     },
     update() {
-      for (const ent of queryEntities.entities()) {
+      const { entities } = query();
+      for (const ent of entities) {
         ent.input.throttle = driver_throttle;
         ent.input.break = driver_break;
         ent.input.turn = driver_turn;
@@ -26706,10 +26707,11 @@ const InputSystem = (world) => {
   };
 };
 const MovementSystem = (world) => {
-  const queryEntities = world.createQuery(["input", "position", "velocity"]);
+  const query = world.createQuery(["input", "position", "velocity"]);
   return {
     update(dt) {
-      for (const ent of queryEntities.entities()) {
+      const { entities } = query();
+      for (const ent of entities) {
         const forceTraction = ent.input.throttle * 50;
         const forceBreak = ent.input.break * -50;
         const forceDrag = ent.velocity.speed * Math.abs(ent.velocity.speed) * -5e-3;
@@ -26731,12 +26733,12 @@ const MovementSystem = (world) => {
 };
 const SpriteRendererSystem = (world) => {
   const sprites = /* @__PURE__ */ new Map();
-  const querySprites = world.createQuery(["position", "sprite"]);
+  const query = world.createQuery(["position", "sprite"]);
   return {
     update() {
       const { app, spritesheets } = world.context;
-      const added = querySprites.added();
-      for (const entity of querySprites.entities()) {
+      const { added, entities, removed } = query();
+      for (const entity of entities) {
         if (added.has(entity.__uuid)) {
           const sheet2 = spritesheets[entity.sprite.spritesheet];
           if (!sheet2)
@@ -26759,6 +26761,13 @@ const SpriteRendererSystem = (world) => {
         const spriteName = entity.sprite.frames[idx];
         if (sprite.texture != sheet.textures[spriteName])
           sprite.texture = sheet.textures[spriteName];
+      }
+      for (const entId of removed) {
+        const sprite = sprites.get(entId);
+        if (!sprite)
+          continue;
+        sprite.destroy();
+        sprites.delete(entId);
       }
     }
   };
@@ -27131,22 +27140,6 @@ var __publicField = (obj, key, value) => {
   __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-const intersects = (data) => {
-  if (data.length === 0)
-    return [];
-  const [first, ...others] = data;
-  return [...first].filter((x) => {
-    for (const set of others) {
-      if (!set.has(x))
-        return false;
-    }
-    return true;
-  });
-};
-const union = (data) => {
-  const entries = new Set(data.map((x) => [...x]).flat());
-  return [...entries];
-};
 const genIdPrefix = () => Date.now();
 let gen = 0;
 let prefix = genIdPrefix();
@@ -27158,31 +27151,23 @@ function genId() {
   }
   return `${prefix.toString(16)}-${gen.toString(16)}`;
 }
-function random(len, arr) {
-  const s = /* @__PURE__ */ new Set();
-  while (s.size < len && s.size !== arr.length) {
-    s.add(arr[Math.floor(Math.random() * arr.length)]);
-  }
-  return [...s];
-}
 class World {
   constructor(context2, comps) {
     __publicField(this, "context");
-    __publicField(this, "components");
-    __publicField(this, "entities", {});
-    __publicField(this, "componentAll", {});
-    __publicField(this, "systems", {});
-    __publicField(this, "entityRemove", /* @__PURE__ */ new Set());
-    __publicField(this, "componentRemove", {});
-    __publicField(this, "componentQueries", {});
-    __publicField(this, "queries", {});
-    __publicField(this, "updatedQueries", /* @__PURE__ */ new Set());
+    __publicField(this, "_components");
+    __publicField(this, "_entities", {});
+    __publicField(this, "_componentAll", {});
+    __publicField(this, "_systems", {});
+    __publicField(this, "_entityRemove", /* @__PURE__ */ new Set());
+    __publicField(this, "_componentRemove", {});
+    __publicField(this, "_componentQueries", {});
+    __publicField(this, "_queries", {});
     this.context = context2;
-    this.components = comps;
+    this._components = comps;
     for (const name in comps) {
-      this.componentAll[name] = /* @__PURE__ */ new Set();
-      this.componentRemove[name] = /* @__PURE__ */ new Set();
-      this.componentQueries[name] = /* @__PURE__ */ new Set();
+      this._componentAll[name] = /* @__PURE__ */ new Set();
+      this._componentRemove[name] = /* @__PURE__ */ new Set();
+      this._componentQueries[name] = /* @__PURE__ */ new Set();
     }
   }
   createEntity(components, values) {
@@ -27191,13 +27176,13 @@ class World {
     if (components) {
       components.forEach((x) => this.addComponent(entity, x, values ? values[x] : void 0));
     }
-    this.entities[id] = entity;
+    this._entities[id] = entity;
     return entity;
   }
   removeEntity(entity) {
     if (!entity)
       return;
-    this.entityRemove.add(entity.__uuid);
+    this._entityRemove.add(entity.__uuid);
     for (const componentName of Object.keys(entity)) {
       if (componentName === "__uuid")
         continue;
@@ -27205,152 +27190,115 @@ class World {
     }
   }
   addComponent(entity, name, value) {
-    const component = Object.assign({}, this.components[name], value != null ? value : {});
+    const component = Object.assign({}, this._components[name], value != null ? value : {});
     entity[name] = component;
-    this.componentAll[name].add(entity.__uuid);
-    this.updateComponents(name, entity.__uuid, "added");
+    this._componentAll[name].add(entity.__uuid);
+    this.updateComponents(name, entity.__uuid, true);
     return entity;
   }
   removeComponent(entity, name) {
-    this.componentAll[name].delete(entity.__uuid);
-    this.componentRemove[name].add(entity.__uuid);
-    this.updateComponents(name, entity.__uuid, "removed");
+    this._componentAll[name].delete(entity.__uuid);
+    this._componentRemove[name].add(entity.__uuid);
+    this.updateComponents(name, entity.__uuid, false);
   }
   createQuery(names) {
     const id = genId();
+    const entity_ids = /* @__PURE__ */ new Set();
+    const entity_added = /* @__PURE__ */ new Set();
+    const entity_removed = /* @__PURE__ */ new Set();
+    const filters_comp = {};
     const query = {
       __uuid: id,
-      executed: false,
-      changed: true,
-      names,
-      entity_ids: /* @__PURE__ */ new Set(),
-      entity_added: /* @__PURE__ */ new Set(),
-      entity_removed: /* @__PURE__ */ new Set(),
-      filters: {},
-      filters_added: {},
-      filters_removed: {}
+      add(id2, name) {
+        if (!filters_comp[name])
+          return;
+        filters_comp[name].add(id2);
+        if (!entity_ids.has(id2) && names.every((x) => filters_comp[x].has(id2))) {
+          entity_ids.add(id2);
+          entity_added.add(id2);
+        }
+      },
+      remove(id2, name) {
+        if (!filters_comp[name])
+          return;
+        filters_comp[name].delete(id2);
+        if (entity_ids.has(id2) && !names.every((x) => filters_comp[x].has(id2))) {
+          entity_ids.delete(id2);
+          if (entity_added.has(id2)) {
+            entity_added.delete(id2);
+          } else {
+            entity_removed.add(id2);
+          }
+        }
+      }
     };
     for (const n of names) {
-      query.filters[n] = /* @__PURE__ */ new Set();
-      query.filters_added[n] = /* @__PURE__ */ new Set();
-      query.filters_removed[n] = /* @__PURE__ */ new Set();
-      this.componentAll[n].forEach((x) => {
-        query.filters[n].add(x);
-        query.filters_added[n].add(x);
-      });
+      filters_comp[n] = /* @__PURE__ */ new Set();
+      this._componentAll[n].forEach((id2) => query.add(id2, n));
     }
-    this.queries[id] = query;
-    names.forEach((x) => this.componentQueries[x].add(id));
-    const refresh = () => {
-      query.executed = true;
-      if (query.changed) {
-        this.updateQuery(query);
-        query.changed = false;
-      }
-    };
-    return {
-      added: () => {
-        refresh();
-        return query.entity_added;
-      },
-      removed: () => {
-        refresh();
-        return query.entity_removed;
-      },
-      entities: () => {
-        refresh();
-        return [...query.entity_ids].map((x) => this.entities[x]);
-      },
-      random: (num) => {
-        refresh();
-        return random(num, [...query.entity_ids]).map((x) => this.entities[x]);
-      }
+    this._queries[id] = query;
+    names.forEach((x) => this._componentQueries[x].add(id));
+    return () => {
+      const data = {
+        added: /* @__PURE__ */ new Set([...entity_added]),
+        removed: /* @__PURE__ */ new Set([...entity_removed]),
+        entities: [...entity_ids].map((x) => this._entities[x])
+      };
+      entity_added.clear();
+      entity_removed.clear();
+      return data;
     };
   }
   addSystem(key, system) {
     const s = system(this);
     if (s.mounted)
       s.mounted();
-    if (!this.systems[key])
-      this.systems[key] = [];
-    this.systems[key].push(s);
-    this.systems[key].sort((a, b) => (a.priority || 1) - (b.priority || 1));
+    if (!this._systems[key])
+      this._systems[key] = [];
+    this._systems[key].push(s);
+    this._systems[key].sort((a, b) => (a.priority || 1) - (b.priority || 1));
     return system;
   }
   updateSystems(keys, dt) {
     const arr = Array.isArray(keys) ? keys : [keys];
-    const systems = arr.map((x) => this.systems[x]).flat();
+    const systems = arr.map((x) => this._systems[x]).flat();
     for (const s of systems) {
       if (s.update)
         s.update(dt);
     }
   }
-  updateQuery(query) {
-    query.entity_ids = new Set(intersects(Object.values(query.filters)));
-    query.entity_added = new Set(union(Object.values(query.filters_added)).filter((x) => query.entity_ids.has(x)));
-    query.entity_removed = new Set(union(Object.values(query.filters_removed)).filter((x) => query.entity_ids.has(x)));
-  }
-  updateComponents(componentName, entityIds, event) {
+  updateComponents(componentName, entityIds, added) {
     const set = entityIds instanceof Set ? entityIds : /* @__PURE__ */ new Set([entityIds]);
     if (set.size === 0)
       return;
     const name = componentName;
-    for (const queryId of this.componentQueries[name]) {
-      const query = this.queries[queryId];
+    for (const queryId of this._componentQueries[name]) {
+      const query = this._queries[queryId];
       for (const entityId of set) {
-        query.filters[name].add(entityId);
-        if (event === "added") {
-          query.filters_added[name].add(entityId);
-          this.updatedQueries.add(queryId);
-          query.changed = true;
-        } else if (event === "removed") {
-          query.filters_removed[name].add(entityId);
-          this.updatedQueries.add(queryId);
-          query.changed = true;
+        if (added) {
+          query.add(entityId, name);
+        } else {
+          query.remove(entityId, name);
         }
       }
     }
   }
   cleanup() {
-    this.updatedQueries.clear();
-    for (const query of Object.values(this.queries)) {
-      if (!query.executed)
-        continue;
-      Object.values(query.filters_added).forEach((x) => {
-        if (x.size === 0)
-          return;
-        this.updatedQueries.add(query.__uuid);
-        x.clear();
-      });
-      Object.values(query.filters_removed).forEach((x) => {
-        if (x.size === 0)
-          return;
-        this.updatedQueries.add(query.__uuid);
-        x.clear();
-      });
-    }
-    for (const name in this.components) {
-      const comp = this.componentRemove[name];
+    for (const name in this._components) {
+      const comp = this._componentRemove[name];
       if (comp.size === 0)
         continue;
       comp.forEach((x) => {
-        this.componentQueries[name].forEach((queryId) => {
-          this.queries[queryId].filters[name].delete(x);
-          this.updatedQueries.add(queryId);
-        });
-        const ent = this.entities[x];
+        const ent = this._entities[x];
         delete ent[name];
       });
       comp.clear();
     }
-    if (this.entityRemove.size > 0) {
-      for (const entityId of this.entityRemove) {
-        delete this.entities[entityId];
+    if (this._entityRemove.size > 0) {
+      for (const entityId of this._entityRemove) {
+        delete this._entities[entityId];
       }
-      this.entityRemove.clear();
-    }
-    for (const id of this.updatedQueries) {
-      this.updateQuery(this.queries[id]);
+      this._entityRemove.clear();
     }
   }
 }
@@ -27372,7 +27320,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     world.addSystem("input", InputSystem);
     world.addSystem("input", MovementSystem);
     world.addSystem("frame", SpriteRendererSystem);
-    for (let i = 0; i < 200; i++) {
+    for (let i = 0; i < 150; i++) {
       world.createEntity(["input", "position", "velocity", "sprite"], {
         position: { x: Math.random() * 1e3, y: Math.random() * 1e3, rotation: Math.random() * Math.PI * 2 },
         sprite: {
@@ -27391,12 +27339,15 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           frames: Array.from(Array(16).keys()).map((x) => x + 1 >= 10 ? `car_topdown00${x + 1}` : `car_topdown000${x + 1}`)
         }
       });
-    }, 1e3);
-    const q = world.createQuery(["position"]);
+    }, 100);
+    const query = world.createQuery(["position"]);
     setInterval(() => {
-      console.log();
-      q.random(1).forEach((x) => world.removeEntity(x));
-    }, 250);
+      const { entities } = query();
+      const first = entities.shift();
+      if (first) {
+        world.removeEntity(first);
+      }
+    }, 1e3);
     app.ticker.add((time) => {
       world.updateSystems(["input", "frame"], time * 16);
       world.cleanup();

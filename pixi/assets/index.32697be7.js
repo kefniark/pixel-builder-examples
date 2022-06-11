@@ -9373,7 +9373,7 @@ const router = createRouter({
   routes: [
     { path: "/", component: IntroScene },
     { path: "/menu", component: MenuScene },
-    { path: "/main", component: () => __vitePreload(() => import("./main.44f0c767.js"), true ? ["assets/main.44f0c767.js","assets/main.87d0cf16.css"] : void 0) },
+    { path: "/main", component: () => __vitePreload(() => import("./main.7ccc482c.js"), true ? ["assets/main.7ccc482c.js","assets/main.87d0cf16.css"] : void 0) },
     { path: "/:catchAll(.*)*", component: MenuScene }
   ],
   history: createWebHashHistory("")
